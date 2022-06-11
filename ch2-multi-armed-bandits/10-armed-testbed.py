@@ -1,3 +1,11 @@
+"""
+Assessing the effectiveness of greedy and ε-greedy action value methods.
+
+Creates a testbed consisting of a set of 2000 k-armed bandits with k=10. Each bandit problem has action values selected
+from a gaussian distribution of mean 0 and variance 1. Then an agent is run for 1000 steps on each problem, and its
+learning behaviour analyzed.
+"""
+
 from typing import Dict, List
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,20 +58,15 @@ class Agent:
             self.update_average_rewards()
 
 
-def run_agent(bandit: Bandit, steps: int) -> []:
-    agent = Agent(epsilon=0.1, bandit=bandit)
-    agent.run(steps=steps)
-    return agent.average_rewards
-
-
 def main():
-
     num_steps = 1000
     num_problems = 2000
 
     rewards = np.empty(shape=(num_problems, num_steps))
     for i in range(num_problems):
-        rewards[i] = run_agent(Bandit(k=10), num_steps)
+        agent = Agent(epsilon=0.1, bandit=Bandit(k=10))
+        agent.run(steps=num_steps)
+        rewards[i] = agent.average_rewards
 
     avg_rewards = np.mean(rewards, axis=0)
 
