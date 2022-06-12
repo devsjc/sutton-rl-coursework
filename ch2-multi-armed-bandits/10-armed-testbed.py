@@ -41,8 +41,6 @@ class Bandit:
     # reward Rt for an action is selected from a normal distribution
     # with mean q* of that action and variance 1
     def get_reward(self, action_number: int) -> float:
-        if action_number >= K:
-            raise Exception(f"Can't access action with number {action_number} for a {K} armed bandit")
         return np.random.normal(loc=self.true_action_values[action_number])
 
 
@@ -64,6 +62,7 @@ def select_action(epsilon: float, action_values: List[ActionValue]) -> int:
 # times each reward has been chosen
 def update_action_value_estimates(action_value_estimates: List[ActionValue], reward_value: float,
                                   action_number: int) -> List[ActionValue]:
+    # create new action value estimates taking into account new reward
     new_estimates = [av if i != action_number
                      else ActionValue(av.sum + reward_value, av.num + 1)
                      for i, av in enumerate(action_value_estimates)]
@@ -89,8 +88,8 @@ def main():
         sum_rewards = [0 for _ in range(STEPS)]
         # loop over all the bandit problems
         for problem in range(PROBLEMS):
-            action_value_estimates: List[ActionValue] = [ActionValue(0, 0) for _ in range(K)]
             bandit = Bandit()
+            action_value_estimates: List[ActionValue] = [ActionValue(0, 0) for _ in range(K)]
             # perform a run of STEPS steps on the current bandit problem
             # update the sum_rewards list by adding to it the reward
             # attained at each step
@@ -106,6 +105,8 @@ def main():
         avg_rewards = [sum_rewards[i] / PROBLEMS for i in range(STEPS)]
         plt.plot([i for i in range(STEPS)], avg_rewards, label=epsilon.__str__())
 
+    plt.xlabel("Steps")
+    plt.ylabel("Average reward")
     plt.legend()
     plt.show()
 
